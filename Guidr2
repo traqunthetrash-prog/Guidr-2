@@ -1,0 +1,467 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+<meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0"/>
+<title>Guidr</title>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,700;0,900;1,400&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet"/>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
+:root{--blue:#1a3adb;--gold:#f0a500;--bg:#f4f5f9;--ink:#0d0f1a;--muted:#8b8fa8;--border:#e2e4ef;}
+html,body{height:100%;background:#1a1a2e;display:flex;align-items:center;justify-content:center;font-family:'DM Sans',sans-serif;}
+.phone{width:390px;height:844px;background:var(--bg);border-radius:44px;overflow:hidden;position:relative;box-shadow:0 0 0 10px #111,0 40px 100px rgba(0,0,0,.6);}
+.screen{position:absolute;inset:0;display:flex;flex-direction:column;opacity:0;pointer-events:none;transition:opacity .25s,transform .25s;transform:translateX(28px);}
+.screen.active{opacity:1;pointer-events:all;transform:translateX(0);}
+.screen.exit{opacity:0;transform:translateX(-28px);}
+.sb{background:var(--blue);padding:14px 24px 10px;display:flex;justify-content:space-between;align-items:center;flex-shrink:0;}
+.sb span{color:#fff;font-size:14px;font-weight:600;}
+#splash{background:#fff;}
+.spl{flex:1;padding:48px 32px 40px;display:flex;flex-direction:column;}
+.logo{width:76px;height:76px;background:var(--blue);border-radius:18px;margin-bottom:28px;display:flex;align-items:center;justify-content:center;}
+.logo::after{content:'g';font-family:'Fraunces',serif;font-size:46px;font-weight:900;color:#fff;line-height:1;}
+.spl h1{font-size:34px;font-weight:300;color:var(--ink);line-height:1.15;margin-bottom:10px;}
+.spl h1 strong{font-weight:700;display:block;}
+.spl p{font-size:16px;color:#555;line-height:1.5;}
+.spl p em{font-style:italic;color:var(--ink);}
+.spl-foot{margin-top:auto;}
+.btn-og{width:100%;padding:17px;border:2px solid var(--gold);border-radius:50px;background:transparent;color:var(--gold);font-family:'Fraunces',serif;font-size:19px;font-style:italic;cursor:pointer;}
+.btn-og:hover{background:var(--gold);color:#fff;}
+#onb{background:#fff;}
+.onb-wrap{flex:1;display:flex;flex-direction:column;overflow:hidden;}
+.onb-top{padding:46px 26px 0;flex-shrink:0;}
+.prg{display:flex;gap:5px;margin-bottom:24px;}
+.prg-p{height:4px;flex:1;background:var(--border);border-radius:2px;transition:background .3s;}
+.prg-p.on{background:var(--blue);}
+.onb-top h2{font-family:'Fraunces',serif;font-size:27px;font-weight:700;color:#1a2060;line-height:1.25;margin-bottom:4px;}
+.onb-top h2 em{font-style:italic;font-weight:400;}
+.onb-top p{font-size:12px;color:var(--muted);line-height:1.5;margin-bottom:14px;}
+.onb-body{flex:1;overflow-y:auto;padding:2px 26px 8px;}
+.inp{width:100%;padding:13px 15px;border:1.5px solid var(--border);border-radius:13px;font-size:15px;font-family:'DM Sans',sans-serif;color:var(--ink);outline:none;background:#fafafa;transition:border .2s;display:block;margin-bottom:10px;}
+.inp:focus{border-color:var(--blue);background:#fff;}
+.cleg{display:flex;gap:12px;margin-bottom:10px;}
+.cleg span{display:flex;align-items:center;gap:5px;font-size:11px;color:var(--muted);}
+.cleg i{width:9px;height:9px;border-radius:50%;display:inline-block;}
+.cgrid{display:flex;flex-wrap:wrap;gap:7px;}
+.chip{padding:8px 14px;border:1.5px solid var(--border);border-radius:50px;font-size:12px;font-weight:500;color:var(--ink);cursor:pointer;background:#fff;transition:all .15s;user-select:none;}
+.chip.must{background:var(--blue);border-color:var(--blue);color:#fff;}
+.chip.nice{background:var(--gold);border-color:var(--gold);color:#fff;}
+.sgrid{display:flex;flex-direction:column;gap:8px;}
+.sopt{padding:13px 16px;border:1.5px solid var(--border);border-radius:13px;font-size:14px;font-weight:500;color:var(--ink);cursor:pointer;background:#fff;transition:all .15s;text-align:left;}
+.sopt:hover{border-color:var(--blue);}
+.sopt.sel{background:var(--blue);border-color:var(--blue);color:#fff;}
+.onb-foot{padding:12px 26px 26px;display:flex;gap:10px;flex-shrink:0;}
+.btn-g{flex:1;padding:15px;border:none;border-radius:50px;background:var(--gold);color:#fff;font-family:'Fraunces',serif;font-size:17px;font-style:italic;cursor:pointer;}
+.btn-g:disabled{opacity:.35;cursor:default;}
+.btn-bk{width:46px;height:50px;border:1.5px solid var(--border);border-radius:50px;background:#fff;color:var(--muted);font-size:19px;cursor:pointer;flex-shrink:0;}
+#loading{background:var(--blue);align-items:center;justify-content:center;}
+.ld{text-align:center;padding:40px;}
+.spin{width:56px;height:56px;border:4px solid rgba(255,255,255,.2);border-top:4px solid #fff;border-radius:50%;animation:spin .9s linear infinite;margin:0 auto 28px;}
+@keyframes spin{to{transform:rotate(360deg);}}
+.ld h2{font-family:'Fraunces',serif;font-size:26px;color:#fff;font-weight:700;margin-bottom:6px;}
+.ld p{color:rgba(255,255,255,.6);font-size:14px;}
+#recs{background:var(--bg);}
+.rh{background:var(--blue);padding:14px 22px 18px;flex-shrink:0;}
+.rh h2{color:#fff;font-size:21px;font-weight:700;margin-bottom:2px;}
+.rh p{color:rgba(255,255,255,.65);font-size:13px;}
+.rsrch{padding:10px 18px;display:flex;gap:8px;align-items:center;flex-shrink:0;}
+.rsrch-box{flex:1;background:#fff;border:1.5px solid var(--border);border-radius:11px;padding:9px 13px;font-size:13px;color:var(--muted);display:flex;align-items:center;gap:7px;}
+.rscroll{flex:1;overflow-y:auto;padding:6px 18px 100px;}
+.rlbl{font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin:14px 0 8px;}
+.rc{background:#fff;border-radius:15px;padding:15px;margin-bottom:9px;cursor:pointer;border:1.5px solid var(--border);transition:all .18s;position:relative;}
+.rc:hover{border-color:var(--blue);}
+.rc-badge{font-size:10px;font-weight:700;color:var(--blue);margin-bottom:3px;}
+.rc-name{font-size:16px;font-weight:700;color:var(--ink);margin-bottom:2px;}
+.rc-sub{font-size:11px;color:var(--muted);}
+.rc-hrt{position:absolute;top:15px;right:15px;font-size:19px;cursor:pointer;}
+.rc-bar{margin-top:9px;height:4px;background:var(--border);border-radius:2px;overflow:hidden;}
+.rc-fill{height:100%;background:var(--blue);border-radius:2px;}
+.mtag{display:inline-flex;font-size:10px;font-weight:600;background:#f0f3ff;color:var(--blue);padding:2px 7px;border-radius:20px;margin-top:5px;margin-right:3px;}
+.ntag{display:inline-flex;font-size:10px;font-weight:600;background:#fff9ec;color:var(--gold);padding:2px 7px;border-radius:20px;margin-top:5px;margin-right:3px;}
+#detail{background:#fff;}
+.dhero{height:195px;background:linear-gradient(135deg,#1a3adb,#0a1a6e);position:relative;overflow:hidden;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:60px;}
+.dtabs{position:absolute;bottom:0;left:0;right:0;display:flex;padding:0 18px;}
+.dtab{flex:1;padding:9px;text-align:center;font-size:12px;font-weight:500;color:rgba(255,255,255,.6);cursor:pointer;border-bottom:2px solid transparent;transition:all .2s;}
+.dtab.on{color:#fff;border-bottom-color:#fff;font-weight:600;}
+.dbk{position:absolute;top:14px;left:14px;width:30px;height:30px;background:rgba(0,0,0,.35);border-radius:50%;display:flex;align-items:center;justify-content:center;color:#fff;font-size:15px;cursor:pointer;}
+.dbody{flex:1;overflow-y:auto;padding:0 0 100px;}
+.dh{padding:14px 18px 10px;}
+.drank{font-size:11px;font-weight:700;color:var(--blue);margin-bottom:3px;}
+.dname{font-size:21px;font-weight:800;color:var(--ink);margin-bottom:2px;}
+.dloc{font-size:12px;color:var(--muted);}
+.dact{padding:0 18px 14px;display:flex;flex-direction:column;gap:7px;}
+.bwhy{padding:13px;border:none;border-radius:50px;background:var(--gold);color:#fff;font-size:14px;font-weight:600;cursor:pointer;width:100%;}
+.badd{padding:13px;border:2px solid var(--gold);border-radius:50px;background:transparent;color:var(--gold);font-size:14px;font-weight:600;cursor:pointer;width:100%;}
+.badd.added{background:var(--gold);color:#fff;}
+.ddiv{height:1px;background:var(--border);margin:0 18px 14px;}
+.dsec{font-size:15px;font-weight:700;color:var(--ink);padding:0 18px 8px;}
+.fscore{padding:0 18px 14px;}
+.fsnum{font-family:'Fraunces',serif;font-size:50px;font-weight:900;color:#1a2060;line-height:1;}
+.fslbl{font-size:12px;color:var(--muted);margin-top:2px;}
+.fwhy{background:#1a2060;color:#fff;border:none;border-radius:50px;padding:7px 14px;font-size:12px;font-weight:600;cursor:pointer;margin-top:7px;}
+.slist{padding:0 18px;}
+.srow{display:flex;align-items:center;padding:11px 0;border-bottom:1px solid var(--border);gap:10px;}
+.srow:last-child{border-bottom:none;}
+.sico{width:30px;height:30px;border-radius:7px;background:var(--bg);display:flex;align-items:center;justify-content:center;font-size:15px;flex-shrink:0;}
+.slbl{font-size:13px;font-weight:600;color:var(--ink);flex:1;}
+.sval{font-size:13px;color:var(--muted);}
+.sbub{margin:0 18px 14px;background:linear-gradient(135deg,#1a2060,#2a4aeb);border-radius:15px;padding:14px;color:#fff;font-size:13px;line-height:1.6;}
+.rdhdr{padding:0 18px 10px;display:flex;align-items:center;gap:9px;}
+.rdico{width:30px;height:30px;background:#ff4500;border-radius:50%;display:flex;align-items:center;justify-content:center;color:#fff;font-size:12px;font-weight:700;flex-shrink:0;}
+.rdtit{font-size:14px;font-weight:700;color:var(--ink);}
+.rdscroll{padding:0 18px;display:flex;gap:9px;overflow-x:auto;padding-bottom:4px;}
+.rdscroll::-webkit-scrollbar{display:none;}
+.rdc{min-width:210px;background:var(--bg);border-radius:11px;padding:12px;flex-shrink:0;}
+.rduser{font-size:11px;color:var(--blue);font-weight:600;margin-bottom:5px;display:flex;align-items:center;gap:5px;}
+.rdav{width:18px;height:18px;border-radius:50%;background:var(--blue);color:#fff;font-size:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.rdtxt{font-size:12px;color:var(--ink);line-height:1.5;}
+.chatbub{margin:14px 18px;background:#fff;border:1.5px solid var(--border);border-radius:15px;padding:13px;}
+.cbn{font-size:11px;font-weight:600;color:var(--muted);margin-bottom:5px;}
+.cbm{font-size:13px;color:var(--ink);margin-bottom:8px;}
+.cbm em{font-style:italic;}
+.cbs{display:inline-block;background:var(--gold);color:#fff;padding:7px 13px;border-radius:50px;font-size:12px;font-weight:500;cursor:pointer;margin-right:5px;margin-bottom:5px;}
+#mylist{background:var(--bg);}
+.mlhdr{background:var(--blue);padding:14px 22px 18px;flex-shrink:0;}
+.mlhdr-row{display:flex;align-items:center;justify-content:space-between;}
+.mlhdr h2{color:#fff;font-size:21px;font-weight:700;}
+.mlsrch{margin-top:9px;background:rgba(255,255,255,.15);border-radius:11px;padding:8px 13px;display:flex;align-items:center;gap:7px;font-size:12px;color:rgba(255,255,255,.5);}
+.mlscroll{flex:1;overflow-y:auto;padding:10px 18px 100px;}
+.mls-title{font-size:26px;font-weight:900;color:var(--ink);margin:10px 0 8px;display:flex;align-items:center;gap:8px;}
+.mls-title span{font-size:13px;font-weight:400;color:var(--blue);cursor:pointer;}
+.mlrow{display:flex;gap:9px;overflow-x:auto;padding-bottom:4px;margin-bottom:6px;}
+.mlrow::-webkit-scrollbar{display:none;}
+.mlcard{min-width:158px;max-width:158px;background:#fff;border-radius:14px;padding:13px;flex-shrink:0;position:relative;border:1.5px solid var(--border);cursor:pointer;}
+.mlcard:hover{border-color:var(--blue);}
+.mlcard-badge{font-size:9px;font-weight:700;color:var(--blue);margin-bottom:2px;}
+.mlcard-name{font-size:13px;font-weight:700;color:var(--ink);line-height:1.3;}
+.mlcard-hrt{position:absolute;top:11px;right:11px;font-size:15px;}
+.mlcard-note{font-size:10px;color:var(--muted);margin-top:5px;line-height:1.4;cursor:pointer;}
+.note-ta{width:100%;margin-top:5px;border:1.5px solid var(--border);border-radius:7px;padding:6px 8px;font-size:11px;font-family:'DM Sans',sans-serif;color:var(--ink);resize:none;outline:none;background:#f9f9fb;}
+.note-ta:focus{border-color:var(--blue);}
+.note-sv{margin-top:4px;padding:4px 10px;background:var(--blue);color:#fff;border:none;border-radius:20px;font-size:10px;font-weight:600;cursor:pointer;}
+.toast{position:absolute;bottom:78px;left:18px;right:18px;background:var(--ink);color:#fff;border-radius:14px;padding:13px 16px;font-size:13px;text-align:center;display:none;z-index:100;}
+.bnav{position:absolute;bottom:0;left:0;right:0;background:#fff;border-top:1px solid var(--border);display:flex;height:68px;z-index:50;}
+.ni{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;cursor:pointer;color:var(--muted);font-size:9px;font-weight:500;}
+.ni.on{color:var(--blue);}
+.ni-ico{font-size:21px;}
+.moverlay{position:absolute;inset:0;background:rgba(0,0,0,.45);z-index:200;display:flex;align-items:flex-end;opacity:0;pointer-events:none;transition:opacity .25s;}
+.moverlay.open{opacity:1;pointer-events:all;}
+.msheet{background:#fff;border-radius:22px 22px 0 0;padding:22px;width:100%;max-height:80%;overflow-y:auto;transform:translateY(100%);transition:transform .3s cubic-bezier(.22,1,.36,1);}
+.moverlay.open .msheet{transform:translateY(0);}
+.mhandle{width:38px;height:4px;background:var(--border);border-radius:2px;margin:0 auto 14px;}
+.mtitle{font-size:17px;font-weight:700;color:var(--ink);margin-bottom:10px;}
+.mcontent{font-size:13px;color:#444;line-height:1.7;}
+.mclose{margin-top:14px;width:100%;padding:13px;background:var(--blue);color:#fff;border:none;border-radius:50px;font-size:14px;font-weight:600;cursor:pointer;}
+.dots{display:inline-flex;gap:4px;vertical-align:middle;}
+.dot{width:6px;height:6px;border-radius:50%;background:currentColor;animation:bop 1.2s infinite;}
+.dot:nth-child(2){animation-delay:.2s;}.dot:nth-child(3){animation-delay:.4s;}
+@keyframes bop{0%,80%,100%{transform:translateY(0);}40%{transform:translateY(-6px);}}
+::-webkit-scrollbar{width:3px;}::-webkit-scrollbar-thumb{background:var(--border);border-radius:2px;}
+</style>
+</head>
+<body>
+<div class="phone">
+<div class="screen active" id="splash">
+  <div class="spl">
+    <div class="logo"></div>
+    <h1>Welcome to<strong>Guidr</strong></h1>
+    <p>Let's find the college that's right for <em>you.</em></p>
+    <div class="spl-foot"><button class="btn-og" onclick="goTo('onb');initOnb()">Get <em>started</em></button></div>
+  </div>
+</div>
+<div class="screen" id="onb">
+  <div class="onb-wrap">
+    <div class="onb-top"><div class="prg" id="prg"></div><h2 id="onbT"></h2><p id="onbS"></p></div>
+    <div class="onb-body" id="onbB"></div>
+    <div class="onb-foot">
+      <button class="btn-bk" id="bkBtn" onclick="onbBack()">←</button>
+      <button class="btn-g" id="nxBtn" onclick="onbNext()" disabled>Next</button>
+    </div>
+  </div>
+</div>
+<div class="screen" id="loading">
+  <div class="ld"><div class="spin"></div><h2>Finding your fit<span id="ldots"></span></h2><p>Analyzing your profile with AI</p></div>
+</div>
+<div class="screen" id="recs">
+  <div class="sb"><span>07:00</span><span>📶 🔋</span></div>
+  <div class="rh"><h2>Your Matches ✨</h2><p id="rsub">Based on your profile</p></div>
+  <div class="rsrch"><div class="rsrch-box">🔍 <span>Search colleges...</span></div></div>
+  <div class="rscroll" id="rlist"></div>
+  <div class="bnav">
+    <div class="ni" onclick="goTo('splash')"><span class="ni-ico">🏠</span>Home</div>
+    <div class="ni on"><span class="ni-ico">✨</span>Matches</div>
+    <div class="ni" onclick="goTo('mylist')"><span class="ni-ico">📋</span>My List</div>
+  </div>
+</div>
+<div class="screen" id="detail">
+  <div class="dhero"><span id="demi">🏫</span>
+    <div class="dbk" onclick="goBack()">←</div>
+    <div class="dtabs">
+      <div class="dtab on" onclick="switchTab('off',this)">Official Info</div>
+      <div class="dtab" onclick="switchTab('unoff',this)">Unofficial Info</div>
+    </div>
+  </div>
+  <div class="dbody" id="dbody"></div>
+  <div class="bnav">
+    <div class="ni" onclick="goTo('splash')"><span class="ni-ico">🏠</span>Home</div>
+    <div class="ni" onclick="goTo('recs')"><span class="ni-ico">✨</span>Matches</div>
+    <div class="ni" onclick="goTo('mylist')"><span class="ni-ico">📋</span>My List</div>
+  </div>
+</div>
+<div class="screen" id="mylist">
+  <div class="sb"><span>07:00</span><span>📶 🔋</span></div>
+  <div class="mlhdr">
+    <div class="mlhdr-row"><h2>My List ✏️</h2><span style="color:var(--gold);font-size:19px;">🔔</span></div>
+    <div class="mlsrch">🔍 Search your saved colleges here.</div>
+  </div>
+  <div class="mlscroll" id="mlscroll"></div>
+  <div class="toast" id="toast">Your list is <em>perfect.</em> Any questions? Ask me!</div>
+  <div class="bnav">
+    <div class="ni" onclick="goTo('splash')"><span class="ni-ico">🏠</span>Home</div>
+    <div class="ni" onclick="goTo('recs')"><span class="ni-ico">✨</span>Matches</div>
+    <div class="ni on"><span class="ni-ico">📋</span>My List</div>
+  </div>
+</div>
+<div class="moverlay" id="modal" onclick="closeMod(event)">
+  <div class="msheet">
+    <div class="mhandle"></div>
+    <div class="mtitle" id="mtitle">Why this college?</div>
+    <div class="mcontent" id="mcontent"><div class="dots"><span class="dot"></span><span class="dot"></span><span class="dot"></span></div></div>
+    <button class="mclose" onclick="closeModDirect()">Got it</button>
+  </div>
+</div>
+</div>
+<script>
+const STEPS=[
+  {id:'name', title:"What's your <em>name?</em>",                   sub:"Just your first name.",                                                         type:'text',  key:'name', ph:"e.g. Tamera"},
+  {id:'major',title:"What do you want to <em>study?</em>",          sub:"Type your major or field. 'Undecided' is totally fine.",                        type:'text',  key:'major',ph:"e.g. Nursing, Business, Undecided..."},
+  {id:'musts',title:"Your <em>must-haves</em> and nice-to-haves?",  sub:"Tap once = must-have (blue)  Tap twice = nice-to-have (gold)  Tap again to remove.", type:'chips', key:'pri', opts:["Full-ride / Heavy financial aid","Strong career placement","Stay in Texas","Faith-based community","Research opportunities","Small class sizes","Big city campus","D1 sports culture","Graduate school prep","2-year option","Diverse community","Strong alumni network","Internship programs","Study abroad"]},
+  {id:'gpa',  title:"What's your current <em>GPA?</em>",            sub:"Unweighted is fine.",                                                           type:'sel',   key:'gpa',  opts:["4.0+","3.7 - 3.9","3.3 - 3.6","3.0 - 3.2","2.5 - 2.9","Below 2.5"]},
+  {id:'dist', title:"How far are you willing to <em>go?</em>",      sub:"",                                                                              type:'sel',   key:'dist', opts:["Texas only","Within the South","Anywhere in the US","Open to international"]},
+  {id:'stype',title:"2-year, 4-year, or <em>both?</em>",            sub:"Community college can be a smart strategic first step.",                        type:'sel',   key:'stype',opts:["4-year university","2-year community college","Either - show me both"]}
+];
+let step=0,ans={},chips={},prof={};
+function initOnb(){step=0;ans={};chips={};renderStep();}
+function renderStep(){
+  const s=STEPS[step];
+  document.getElementById('prg').innerHTML=STEPS.map((_,i)=>'<div class="prg-p '+(i<=step?'on':'')+'"></div>').join('');
+  document.getElementById('onbT').innerHTML=s.title;
+  document.getElementById('onbS').textContent=s.sub;
+  document.getElementById('bkBtn').style.display=step===0?'none':'flex';
+  const nb=document.getElementById('nxBtn');
+  nb.textContent=step===STEPS.length-1?'Find my colleges ✨':'Next';
+  nb.disabled=!canGo(s);
+  const B=document.getElementById('onbB');
+  if(s.type==='text'){
+    B.innerHTML='<input class="inp" id="ti" type="text" placeholder="'+s.ph+'" value="'+(ans[s.key]||'')+'"/>';
+    const t=document.getElementById('ti');
+    t.oninput=function(){ans[s.key]=t.value.trim();nb.disabled=!t.value.trim();};
+    setTimeout(function(){t.focus();},180);
+  }else if(s.type==='chips'){
+    if(!chips[s.id])chips[s.id]={};
+        B.innerHTML='<div class="cleg"><span><i style="background:var(--blue)"></i>Must-have</span><span><i style="background:var(--gold)"></i>Nice-to-have</span></div><div class="cgrid">'+s.opts.map(function(o,oi){var st=chips[s.id][o]||0;return'<div class="chip '+(st===1?'must':st===2?'nice':'')+'" data-sid="'+s.id+'" data-oi="'+oi+'" onclick="tChipIdx(this)">'+o+'</div>';}).join('')+'</div>';
+    nb.disabled=false;
+  }else{
+    B.innerHTML='<div class="sgrid">'+s.opts.map(function(o){return'<button class="sopt '+(ans[s.key]===o?'sel':'')+'" onclick="pickO(\''+s.key+'\',\''+o+'\',this)">'+o+'</button>';}).join('')+'</div>';
+  }
+}
+function canGo(s){if(s.type==='text')return!!(ans[s.key]||'').trim();if(s.type==='chips')return true;return!!ans[s.key];}
+function tChip(sid,opt,el){if(!chips[sid])chips[sid]={};chips[sid][opt]=((chips[sid][opt]||0)+1)%3;el.className='chip '+(chips[sid][opt]===1?'must':chips[sid][opt]===2?'nice':'');syncC(sid);}
+function tChipIdx(el){var sid=el.getAttribute('data-sid');var oi=parseInt(el.getAttribute('data-oi'));var s=STEPS.find(function(x){return x.id===sid;});var opt=s.opts[oi];tChip(sid,opt,el);}
+function syncC(sid){var s=STEPS.find(function(x){return x.id===sid;});var m=[],n=[];s.opts.forEach(function(o){var st=chips[sid][o]||0;if(st===1)m.push(o);if(st===2)n.push(o);});ans.musts=m;ans.nices=n;}
+function pickO(key,val,el){ans[key]=val;el.closest('.sgrid').querySelectorAll('.sopt').forEach(function(b){b.classList.remove('sel');});el.classList.add('sel');document.getElementById('nxBtn').disabled=false;}
+function onbNext(){var s=STEPS[step];if(s.type==='chips'){if(!ans.musts)ans.musts=[];if(!ans.nices)ans.nices=[];}if(step<STEPS.length-1){step++;renderStep();}else{prof=Object.assign({},ans);startLoad();}}
+function onbBack(){if(step>0){step--;renderStep();}}
+
+var C=[
+{id:“tamu”,name:“Texas A&M University”,short:“Texas A&M”,type:“4-Year”,rank:”#2 Public University in Texas”,emi:“🤠”,acc:“62%”,net:”$21,610/yr”,city:“College Station, TX”,site:“tamu.edu”,base:82,tags:[“Stay in Texas”,“Strong alumni network”,“D1 sports culture”,“Strong career placement”],aid:“Strong merit scholarships for TX residents”,sum:“Students describe A&M as a ‘big family’ with powerful school spirit, Silver Taps traditions, and one of the strongest alumni networks in the country.”,yt:“Texas A&M University campus student life vlog”,reddit:[{u:“AggieForever99”,sub:“r/aggies”,url:“https://reddit.com/r/aggies/”,txt:“Football games and traditions are INSANE. You feel like you belong to something bigger.”},{u:“ShaunTX”,sub:“r/ApplyingToCollege”,url:“https://reddit.com/r/ApplyingToCollege/search/?q=texas+a%26m”,txt:“Huge campus but community is tight. Advisors are helpful if you reach out early.”},{u:“CollegeStationLifer”,sub:“r/aggies”,url:“https://reddit.com/r/aggies/”,txt:“College Station revolves around A&M. Very much a college town. Loved it.”}]},
+{id:“ut”,name:“UT Austin”,short:“UT Austin”,type:“4-Year”,rank:”#1 Public University in Texas”,emi:“🤘”,acc:“31%”,net:”$18,900/yr”,city:“Austin, TX”,site:“utexas.edu”,base:72,tags:[“Stay in Texas”,“Big city campus”,“Strong career placement”,“Internship programs”,“Research opportunities”],aid:“Texas Advance Commitment for families under $65K”,sum:“UT Austin sits in one of the fastest-growing cities in the US. World-class research, but you have to be proactive to avoid getting lost in the crowd.”,yt:“University of Texas Austin campus tour student vlog 2024”,reddit:[{u:“LonghornAlum”,sub:“r/UTAustin”,url:“https://reddit.com/r/UTAustin/”,txt:“Austin alone is worth it. Internship and networking opportunities are unreal.”},{u:“PremedHopper”,sub:“r/premed”,url:“https://reddit.com/r/premed/search/?q=UT+Austin”,txt:“Pre-med is brutal here. Very competitive. Know what you're getting into.”},{u:“MusicCityVibes”,sub:“r/UTAustin”,url:“https://reddit.com/r/UTAustin/”,txt:“The social scene is unmatched. 6th Street, Rainey, lake days — top tier.”}]},
+{id:“baylor”,name:“Baylor University”,short:“Baylor”,type:“4-Year”,rank:“Top Christian University in Texas”,emi:“🐻”,acc:“67%”,net:”$29,400/yr”,city:“Waco, TX”,site:“baylor.edu”,base:80,tags:[“Stay in Texas”,“Faith-based community”,“Strong career placement”,“Graduate school prep”],aid:“Presidential Scholarship up to full tuition”,sum:“Baylor blends faith, academics, and strong career outcomes in a tight-knit community. Known for nursing, business, and pre-law. Chapel attendance is expected.”,yt:“Baylor University campus tour student vlog 2024”,reddit:[{u:“SicEmBears22”,sub:“r/baylor”,url:“https://reddit.com/r/baylor/”,txt:“Faith community here is real, not performative. The warmth is genuine.”},{u:“WacoWatcher”,sub:“r/ApplyingToCollege”,url:“https://reddit.com/r/ApplyingToCollege/search/?q=baylor”,txt:“Waco has grown a lot. Campus is beautiful on the river.”},{u:“BaylorNurse2024”,sub:“r/baylor”,url:“https://reddit.com/r/baylor/”,txt:“Nursing program is rigorous but professors know you by name. That matters.”}]},
+{id:“hbu”,name:“Houston Baptist University”,short:“HBU”,type:“4-Year”,rank:“Top Small Christian University in Houston”,emi:“⚓”,acc:“82%”,net:”$22,500/yr”,city:“Houston, TX”,site:“hbu.edu”,base:78,tags:[“Stay in Texas”,“Faith-based community”,“Big city campus”,“Full-ride / Heavy financial aid”,“Small class sizes”],aid:“Automatic merit awards based on GPA”,sum:“HBU gives you faith community plus Houston's massive job market. Very accessible professors and genuinely personalized support.”,yt:“Houston Baptist University HBU campus tour student life”,reddit:[{u:“HBUgrad23”,sub:“r/ApplyingToCollege”,url:“https://reddit.com/r/ApplyingToCollege/search/?q=houston+baptist”,txt:“Small school energy in the middle of Houston. Best of both worlds.”},{u:“HoustonHustle”,sub:“r/houston”,url:“https://reddit.com/r/houston/search/?q=HBU”,txt:“The career office is actually useful. Got my first internship sophomore year.”},{u:“FaithAndWork_TX”,sub:“r/ApplyingToCollege”,url:“https://reddit.com/r/ApplyingToCollege/search/?q=HBU”,txt:“Chapel twice a week is required but community is real. Never felt forced.”}]},
+{id:“rice”,name:“Rice University”,short:“Rice”,type:“4-Year”,rank:”#1 University in Texas”,emi:“🦉”,acc:“8%”,net:”$16,800/yr”,city:“Houston, TX”,site:“rice.edu”,base:52,tags:[“Stay in Texas”,“Research opportunities”,“Full-ride / Heavy financial aid”,“Graduate school prep”,“Small class sizes”,“Big city campus”],aid:“100% of need met, no loans ever”,sum:“Elite, small, research-focused. The residential college system ties your social and academic life together. Surprisingly collaborative for how selective it is.”,yt:“Rice University campus tour student life residential college”,reddit:[{u:“OwlNation_R”,sub:“r/RiceUniversity”,url:“https://reddit.com/r/RiceUniversity/”,txt:“The no-loan policy changed my life. Family paid less than at a state school.”},{u:“RiceResearcher”,sub:“r/RiceUniversity”,url:“https://reddit.com/r/RiceUniversity/”,txt:“Undergrad research access is ridiculous. I was in a real lab sophomore year.”},{u:“HoustonOwl”,sub:“r/ApplyingToCollege”,url:“https://reddit.com/r/ApplyingToCollege/search/?q=rice+university”,txt:“Different from a big school but residential colleges make it feel small and tight.”}]},
+{id:“tcu”,name:“Texas Christian University”,short:“TCU”,type:“4-Year”,rank:“Top Private University in DFW”,emi:“🐸”,acc:“49%”,net:”$31,200/yr”,city:“Fort Worth, TX”,site:“tcu.edu”,base:74,tags:[“Stay in Texas”,“Strong career placement”,“Big city campus”,“D1 sports culture”,“Strong alumni network”],aid:“Chancellor's Scholarship up to full tuition”,sum:“TCU sits in Fort Worth with a tight-knit campus culture and strong business, nursing, and communications programs. Beautiful campus and passionate athletics culture.”,yt:“TCU Texas Christian University campus tour student vlog”,reddit:[{u:“FrogNation22”,sub:“r/TCU”,url:“https://reddit.com/r/TCU/”,txt:“Fort Worth is underrated. The city has grown so much and TCU is right in it.”},{u:“HornedFrogFan”,sub:“r/CFB”,url:“https://reddit.com/r/CFB/search/?q=TCU”,txt:“Game days at TCU are electric. Campus is gorgeous. Greek life is huge.”},{u:“TCUBizStudent”,sub:“r/TCU”,url:“https://reddit.com/r/TCU/”,txt:“Neeley Business has real connections. Got recruited at a campus event junior year.”}]},
+{id:“utsa”,name:“UT San Antonio”,short:“UTSA”,type:“4-Year”,rank:“Carnegie R1 Research University”,emi:“🌵”,acc:“82%”,net:”$13,500/yr”,city:“San Antonio, TX”,site:“utsa.edu”,base:81,tags:[“Stay in Texas”,“Full-ride / Heavy financial aid”,“Big city campus”,“Diverse community”,“Research opportunities”],aid:“Automatic merit awards, Texas Grant eligible”,sum:“One of the most affordable paths to a research university in Texas. Rapidly growing, diverse, strong in cybersecurity, business, and engineering.”,yt:“UTSA University Texas San Antonio campus tour student life”,reddit:[{u:“RoadrunnerRising”,sub:“r/UTSA”,url:“https://reddit.com/r/UTSA/”,txt:“UTSA gets slept on. Affordable, diverse, cybersecurity is nationally ranked.”},{u:“SAstudent23”,sub:“r/UTSA”,url:“https://reddit.com/r/UTSA/”,txt:“San Antonio is a great student city. Always improving.”},{u:“FirstGenTX”,sub:“r/ApplyingToCollege”,url:“https://reddit.com/r/ApplyingToCollege/search/?q=UTSA”,txt:“First-gen friendly. Lots of resources and financial aid is genuinely good.”}]},
+{id:“harvard”,name:“Harvard University”,short:“Harvard”,type:“4-Year”,rank:”#1 University in the World”,emi:“🎓”,acc:“3.6%”,net:”$15,000/yr”,city:“Cambridge, MA”,site:“harvard.edu”,base:38,tags:[“Research opportunities”,“Graduate school prep”,“Full-ride / Heavy financial aid”,“Strong alumni network”,“Internship programs”],aid:“Families under $85K pay nothing. No loans.”,sum:“The most recognized university on earth. Alumni network and research are unmatched. Financial aid is shockingly generous — many families pay less than at state schools.”,yt:“Harvard University campus tour student life vlog 2024”,reddit:[{u:“CrimsonGrad25”,sub:“r/Harvard”,url:“https://reddit.com/r/harvard/”,txt:“The financial aid is genuinely incredible. My family paid less than at a state school.”},{u:“HarvardHooper”,sub:“r/ApplyingToCollege”,url:“https://reddit.com/r/ApplyingToCollege/search/?q=harvard”,txt:“Don’t apply just for the name. Have a clear reason — essays will expose you if you don't.”},{u:“CambridgeLife”,sub:“r/Harvard”,url:“https://reddit.com/r/harvard/”,txt:“Boston/Cambridge is the best college city in America. Density of ambition is wild.”}]},
+{id:“yale”,name:“Yale University”,short:“Yale”,type:“4-Year”,rank:“Top 3 University in the US”,emi:“🏛️”,acc:“4.6%”,net:”$17,000/yr”,city:“New Haven, CT”,site:“yale.edu”,base:36,tags:[“Research opportunities”,“Graduate school prep”,“Full-ride / Heavy financial aid”,“Strong alumni network”,“Small class sizes”],aid:“Meets 100% of need, families under $75K pay nothing”,sum:“Known for its residential college system, extraordinary arts and humanities, and one of the most generous financial aid programs in the country. Collaborative, not cutthroat.”,yt:“Yale University campus tour student life New Haven vlog”,reddit:[{u:“YaleYalie”,sub:“r/yale”,url:“https://reddit.com/r/yale/”,txt:“The residential college system makes Yale feel small. Your college is your home.”},{u:“NewHavenNotes”,sub:“r/ApplyingToCollege”,url:“https://reddit.com/r/ApplyingToCollege/search/?q=yale”,txt:“New Haven gets a bad rep but the area near campus is lively.”},{u:“YaleMedPath”,sub:“r/premed”,url:“https://reddit.com/r/premed/search/?q=yale”,txt:“No required curriculum gives you real freedom. Don’t take it for granted.”}]},
+{id:“princeton”,name:“Princeton University”,short:“Princeton”,type:“4-Year”,rank:”#1 National University (US News)”,emi:“🐯”,acc:“4.7%”,net:”$16,000/yr”,city:“Princeton, NJ”,site:“princeton.edu”,base:35,tags:[“Research opportunities”,“Graduate school prep”,“Full-ride / Heavy financial aid”,“Strong alumni network”],aid:“No loans ever. Under $100K families typically pay nothing.”,sum:“Most generous financial aid in the Ivy League — no loans, period. Undergrad teaching is a genuine priority here. The eating clubs are a unique social institution.”,yt:“Princeton University campus tour student life vlog 2024”,reddit:[{u:“TigerTracks”,sub:“r/princeton”,url:“https://reddit.com/r/princeton/”,txt:“Princeton's aid is the best. No loans at all. Graduating completely debt-free.”},{u:“PrincetonProspect”,sub:“r/ApplyingToCollege”,url:“https://reddit.com/r/ApplyingToCollege/search/?q=princeton”,txt:“Eating clubs are polarizing. Know what you're getting into socially.”},{u:“NJCollegeTown”,sub:“r/princeton”,url:“https://reddit.com/r/princeton/”,txt:“It's a bubble, no question. But the resources inside are unreal.”}]},
+{id:“penn”,name:“University of Pennsylvania”,short:“UPenn”,type:“4-Year”,rank:“Top Ivy for Business and Pre-Med”,emi:“🔵”,acc:“7.7%”,net:”$18,000/yr”,city:“Philadelphia, PA”,site:“upenn.edu”,base:40,tags:[“Research opportunities”,“Graduate school prep”,“Strong career placement”,“Internship programs”,“Strong alumni network”],aid:“Meets 100% of demonstrated need”,sum:“Penn's Wharton is the most prestigious undergrad business program in the world. Pre-med through Penn Medicine is elite. Philadelphia is a real city, not just a campus.”,yt:“University of Pennsylvania UPenn Wharton campus student vlog”,reddit:[{u:“WhartonWatcher”,sub:“r/UPenn”,url:“https://reddit.com/r/UPenn/”,txt:“Wharton networking starts day one. Alumni are everywhere and respond to cold emails.”},{u:“PhillyPenn”,sub:“r/UPenn”,url:“https://reddit.com/r/UPenn/”,txt:“Philly is underrated. West Philly has character. The food scene is real.”},{u:“PennPremed”,sub:“r/premed”,url:“https://reddit.com/r/premed/search/?q=UPenn”,txt:“Penn is extremely pre-med friendly. Grade deflation myth is overblown for most majors.”}]},
+{id:“vandy”,name:“Vanderbilt University”,short:“Vanderbilt”,type:“4-Year”,rank:“Top 15 National University”,emi:“⭐”,acc:“7%”,net:”$21,000/yr”,city:“Nashville, TN”,site:“vanderbilt.edu”,base:58,tags:[“Graduate school prep”,“Strong career placement”,“Strong alumni network”,“Research opportunities”,“Full-ride / Heavy financial aid”],aid:“Meets 100% of need, Opportunity Vanderbilt is loan-free”,sum:“The closest thing to an Ivy in the South. Nashville is one of the hottest cities in the country. Strong in medicine, law, and engineering. Greek life is significant.”,yt:“Vanderbilt University Nashville campus student life vlog 2024”,reddit:[{u:“VandyGrad24”,sub:“r/vanderbilt”,url:“https://reddit.com/r/vanderbilt/”,txt:“Nashville makes Vandy. You’re in a real city that loves college students.”},{u:“SouthernIvy”,sub:“r/ApplyingToCollege”,url:“https://reddit.com/r/ApplyingToCollege/search/?q=vanderbilt”,txt:“Greek life is big here. If that\’s not your scene, find your people early.”},{u:“VandyMed”,sub:“r/premed”,url:“https://reddit.com/r/premed/search/?q=vanderbilt”,txt:“Pre-med here is rigorous but very well supported. Vandy Med is a pipeline for residency.”}]},
+{id:“spelman”,name:“Spelman College”,short:“Spelman”,type:“4-Year”,rank:”#1 HBCU in the US”,emi:“👑”,acc:“35%”,net:”$24,000/yr”,city:“Atlanta, GA”,site:“spelman.edu”,base:68,tags:[“Diverse community”,“Strong alumni network”,“Graduate school prep”,“Research opportunities”,“Strong career placement”],aid:“Institutional grants plus UNCF scholarships widely available”,sum:“The most prestigious HBCU in the country. Atlanta is a major hub for Black professionals. The AUC gives you access to Morehouse, Clark Atlanta, and more.”,yt:“Spelman College campus tour Atlanta student life vlog”,reddit:[{u:“SpelmanSister”,sub:“r/HBCU”,url:“https://reddit.com/r/HBCU/”,txt:“Spelman changed how I see myself. The sisterhood is real, not performative.”},{u:“ATLCollegeLife”,sub:“r/Spelman”,url:“https://reddit.com/r/Spelman/”,txt:“Atlanta gives internship access most campuses can't match. CNN, Delta, CDC — all here.”},{u:“AUCExperience”,sub:“r/HBCU”,url:“https://reddit.com/r/HBCU/”,txt:“AUC consortium means you can take classes at Morehouse and Clark too.”}]},
+{id:“tulane”,name:“Tulane University”,short:“Tulane”,type:“4-Year”,rank:“Top 50 National University”,emi:“🌊”,acc:“13%”,net:”$26,000/yr”,city:“New Orleans, LA”,site:“tulane.edu”,base:64,tags:[“Strong career placement”,“Graduate school prep”,“Study abroad”,“Diverse community”,“Big city campus”],aid:“Dean's Honor Scholarship up to full tuition”,sum:“Rigorous academics in the most culturally rich college city in America. Strong in public health, business, and law. Service learning is built into the curriculum.”,yt:“Tulane University campus New Orleans student life vlog”,reddit:[{u:“GreenWave24”,sub:“r/tulane”,url:“https://reddit.com/r/tulane/”,txt:“New Orleans is the culture. You don't just go to Tulane — you go to New Orleans.”},{u:“TulaneTransfer”,sub:“r/ApplyingToCollege”,url:“https://reddit.com/r/ApplyingToCollege/search/?q=tulane”,txt:“The merit aid is real. A lot of people get significant scholarships here.”},{u:“PubHealthNOLA”,sub:“r/tulane”,url:“https://reddit.com/r/tulane/”,txt:“Public health program is top tier and you're in the city that needs it most.”}]}
+];
+
+function score(c){
+var s=c.base;
+(prof.musts||[]).forEach(function(m){s+=c.tags.indexOf(m)>=0?7:-9;});
+(prof.nices||[]).forEach(function(n){s+=c.tags.indexOf(n)>=0?3:0;});
+if(prof.dist===‘Texas only’&&c.city.indexOf(‘TX’)<0)s-=30;
+if(prof.dist===‘Within the South’){var ss=[‘TX’,‘TN’,‘GA’,‘FL’,‘NC’,‘SC’,‘AL’,‘MS’,‘LA’,‘AR’,‘OK’];if(!ss.some(function(x){return c.city.indexOf(x)>=0;}))s-=18;}
+if(prof.stype===‘4-year university’&&c.type.indexOf(‘2-Year’)>=0)s-=40;
+if(prof.stype===‘2-year community college’&&c.type.indexOf(‘2-Year’)<0)s-=25;
+return Math.min(99,Math.max(8,Math.round(s)));
+}
+function cat(c){var a=parseInt(c.acc);return a<=10?‘reach’:a<=40?‘reach’:a<=70?‘fit’:‘safe’;}
+
+async function startLoad(){
+goTo(‘loading’);
+var d=0;var el=document.getElementById(‘ldots’);
+var iv=setInterval(function(){d=(d+1)%4;el.textContent=’.’.repeat(d);},400);
+try{
+var r=await fetch(“https://api.anthropic.com/v1/messages”,{method:“POST”,headers:{“Content-Type”:“application/json”},body:JSON.stringify({model:“claude-sonnet-4-20250514”,max_tokens:1000,messages:[{role:“user”,content:“Student: “+JSON.stringify(prof)+”. Write ONE warm sentence under 15 words summarizing what kind of college fits them. Return ONLY the sentence.”}]})});
+var j=await r.json();var t=j.content&&j.content[0]&&j.content[0].text;
+if(t)document.getElementById(‘rsub’).textContent=t.trim();
+}catch(e){}
+clearInterval(iv);buildRecs();goTo(‘recs’);
+}
+
+var saved={reach:[],fit:[],safe:[]},curCol=null,curTab=‘off’,prevScr=‘recs’,notes={};
+function isSaved(id){return Object.values(saved).some(function(a){return a.indexOf(id)>=0;});}
+
+function buildRecs(){
+var sc=C.map(function(c){return Object.assign({},c,{fit:score(c),ct:cat(c)});}).sort(function(a,b){return b.fit-a.fit;});
+var el=document.getElementById(‘rlist’);var html=’’;
+function sec(lbl,arr){
+if(!arr.length)return’’;
+var s=’<div class="rlbl">’+lbl+’</div>’;
+arr.forEach(function(c){
+var mm=(prof.musts||[]).filter(function(t){return c.tags.indexOf(t)>=0;}).slice(0,2);
+var nn=(prof.nices||[]).filter(function(t){return c.tags.indexOf(t)>=0;}).slice(0,1);
+s+=’<div class="rc" onclick="openCol(\''+c.id+'\')">’
++’<div class="rc-badge">’+c.fit+’% match - ‘+c.type+’</div>’
++’<div class="rc-name">’+c.name+’</div>’
++’<div class="rc-sub">’+c.city+’</div>’
++’<div class="rc-hrt" onclick="event.stopPropagation();togSave(\''+c.id+'\',this)">’+(isSaved(c.id)?‘🧡’:‘🤍’)+’</div>’
++’<div>’+mm.map(function(t){return’<span class="mtag">✓ ‘+t+’</span>’;}).join(’’)+nn.map(function(t){return’<span class="ntag">+ ‘+t+’</span>’;}).join(’’)+’</div>’
++’<div class="rc-bar"><div class="rc-fill" style="width:'+c.fit+'%"></div></div>’
++’</div>’;
+});
+return s;
+}
+html+=sec(‘🎯 Reach’,sc.filter(function(c){return c.ct===‘reach’;}));
+html+=sec(‘✅ Fit’,sc.filter(function(c){return c.ct===‘fit’;}));
+html+=sec(‘🛡️ Safe’,sc.filter(function(c){return c.ct===‘safe’;}));
+el.innerHTML=html;
+}
+
+function openCol(id){
+var base=C.find(function(c){return c.id===id;});
+curCol=Object.assign({},base,{fit:score(base)});
+prevScr=document.querySelector(’.screen.active’).id;
+curTab=‘off’;
+document.getElementById(‘demi’).textContent=curCol.emi;
+document.querySelectorAll(’.dtab’).forEach(function(t,i){t.classList.toggle(‘on’,i===0);});
+renderDetail();goTo(‘detail’);
+}
+
+function renderDetail(){
+var c=curCol,sv=isSaved(c.id);
+if(curTab===‘off’){
+document.getElementById(‘dbody’).innerHTML=
+‘<div class="dh"><div class="drank">’+c.rank+’</div><div class="dname">’+c.name+’</div><div class="dloc">’+c.type+’</div></div>’
++’<div class="dact"><button class="bwhy" onclick="openWhy(\''+c.id+'\')">Why this college? ✨</button>’
++’<button class="badd '+(sv?'added':'')+'" id="addBtn" onclick="togSaveDet(\''+c.id+'\',this)">’+(sv?‘✓ Saved to My List’:’+ Add to list’)+’</button></div>’
++’<div class="ddiv"></div>’
++’<div class="dsec">✨ Guidr's Summary</div>’
++’<div class="fscore"><div class="fsnum">’+c.fit+’%</div><div class="fslbl">/100 fit</div><button class="fwhy" onclick="openWhy(\''+c.id+'\')">Why? ✨</button></div>’
++’<div class="sbub">’+c.sum+’</div>’
++’<div class="ddiv"></div>’
++’<div class="slist">’
++’<div class="srow"><div class="sico">🏆</div><div class="slbl">Acceptance Rate</div><div class="sval">’+c.acc+’</div></div>’
++’<div class="srow"><div class="sico">💵</div><div class="slbl">Net Price / Year</div><div class="sval">’+c.net+’</div></div>’
++’<div class="srow"><div class="sico">📍</div><div class="slbl">’+c.city+’</div></div>’
++’<div class="srow"><div class="sico">🌐</div><div class="slbl"><span style="color:var(--blue)">’+c.site+’</span></div></div>’
++’<div class="srow"><div class="sico">🎓</div><div class="slbl">Financial Aid</div><div class="sval" style="font-size:11px;max-width:150px;text-align:right">’+c.aid+’</div></div>’
++’</div>’;
+}else{
+var rdHtml=c.reddit.map(function(r){
+return ‘<div class="rdc"><div class="rduser"><div class="rdav">’+r.u[0]+’</div>’+r.u+’</div>’
++’<div class="rdtxt">”’+r.txt+’”</div>’
++’<div style="margin-top:7px;display:flex;align-items:center;justify-content:space-between;">’
++’<span style="font-size:9px;font-weight:700;color:#ff4500;background:#fff0eb;padding:2px 7px;border-radius:20px;">’+r.sub+’</span>’
++’<a href="'+r.url+'" target="_blank" style="font-size:9px;color:var(--blue);text-decoration:none;font-weight:600;">View on Reddit ↗</a>’
++’</div></div>’;
+}).join(’’);
+document.getElementById(‘dbody’).innerHTML=
+‘<div class="dh"><div class="drank">’+c.rank+’</div><div class="dname">’+c.name+’</div><div class="dloc">’+c.type+’</div></div>’
++’<div class="ddiv"></div>’
++’<div class="dsec">▶️ YouTube — Student Vlogs</div>’
++’<div style="padding:0 18px 14px;"><div style="background:#000;border-radius:11px;overflow:hidden;aspect-ratio:16/9;">’
++’<iframe style="width:100%;height:100%;border:none;" src="https://www.youtube.com/embed?listType=search&list='+encodeURIComponent(c.yt)+'" allow="accelerometer;autoplay;clipboard-write;encrypted-media;gyroscope;picture-in-picture" allowfullscreen></iframe>’
++’</div><a href="https://www.youtube.com/results?search_query='+encodeURIComponent(c.yt)+'" target="_blank" style="display:block;text-align:center;margin-top:7px;font-size:12px;color:var(--blue);text-decoration:none;font-weight:600;">See more on YouTube ↗</a></div>’
++’<div class="ddiv"></div>’
++’<div class="rdhdr"><div class="rdico">r/</div><div class="rdtit">From Reddit Forums</div><span style="color:var(--muted);font-size:10px;margin-left:auto;font-style:italic;">Representative quotes</span></div>’
++’<div class="rdscroll">’+rdHtml+’</div>’
++’<div style="padding:3px 18px 10px;font-size:10px;color:var(--muted);font-style:italic;">⚠️ Quotes represent discussions in these subreddits. Read threads directly for full context.</div>’
++’<div class="chatbub"><div class="cbn">Hey there! — I'm Guidrbot!</div>’
++’<div class="cbm">Ask me <em>anything</em> about ‘+c.short+’!</div>’
++’<span class="cbs" onclick="askBot(\'Would I fit here?\',\''+c.id+'\')">Would I fit here?</span>’
++’<span class="cbs" onclick="askBot(\'How is the financial aid?\',\''+c.id+'\')">Financial aid?</span>’
++’</div>’;
+}
+}
+function switchTab(tab,el){curTab=tab;document.querySelectorAll(’.dtab’).forEach(function(t){t.classList.remove(‘on’);});el.classList.add(‘on’);renderDetail();}
+
+async function openWhy(id){
+var c=C.find(function(x){return x.id===id;}),f=score(c);
+document.getElementById(‘mtitle’).textContent=‘Why ‘+c.short+’?’;
+document.getElementById(‘mcontent’).innerHTML=’<div class="dots"><span class="dot"></span><span class="dot"></span><span class="dot"></span></div>’;
+document.getElementById(‘modal’).classList.add(‘open’);
+try{
+var r=await fetch(“https://api.anthropic.com/v1/messages”,{method:“POST”,headers:{“Content-Type”:“application/json”},body:JSON.stringify({model:“claude-sonnet-4-20250514”,max_tokens:1000,messages:[{role:“user”,content:“Student: “+JSON.stringify(prof)+”. Must-haves: “+((prof.musts||[]).join(’, ‘)||‘none’)+”. Nice-to-haves: “+((prof.nices||[]).join(’, ‘)||‘none’)+”. They’re looking at “+c.name+” (”+f+”% match). Write 3-4 sentences: why it fits — or flag honest mismatches. Direct, no bullets, conversational.”}]})});
+var j=await r.json();document.getElementById(‘mcontent’).textContent=(j.content&&j.content[0]&&j.content[0].text)||fbWhy(c,f);
+}catch(e){document.getElementById(‘mcontent’).textContent=fbWhy(c,f);}
+}
+function fbWhy(c,f){return c.name+’ matches your profile with a ‘+f+’% fit score, aligning with your priorities around ‘+((prof.musts||[]).slice(0,2).join(’ and ‘)||‘your stated goals’)+’.’;}
+
+async function askBot(q,id){
+var c=C.find(function(x){return x.id===id;});
+document.getElementById(‘mtitle’).textContent=‘Guidrbot 🤖’;
+document.getElementById(‘mcontent’).innerHTML=’<em style="color:var(--muted)">”’+q+’”</em><br><br><div class="dots"><span class="dot"></span><span class="dot"></span><span class="dot"></span></div>’;
+document.getElementById(‘modal’).classList.add(‘open’);
+try{
+var r=await fetch(“https://api.anthropic.com/v1/messages”,{method:“POST”,headers:{“Content-Type”:“application/json”},body:JSON.stringify({model:“claude-sonnet-4-20250514”,max_tokens:1000,messages:[{role:“user”,content:“Student: “+JSON.stringify(prof)+”. About “+c.name+’: “’+q+’”. Answer in 2-3 sentences. Honest, specific, no fluff.’}]})});
+var j=await r.json();document.getElementById(‘mcontent’).innerHTML=’<em style="color:var(--muted);font-size:12px">”’+q+’”</em><br><br>’+((j.content&&j.content[0]&&j.content[0].text)||’’);
+}catch(e){document.getElementById(‘mcontent’).innerHTML=’<em style="color:var(--muted);font-size:12px">”’+q+’”</em><br><br>Based on your profile, ‘+c.name+’ looks like a solid option. Check their official site for details.’;}
+}
+function closeMod(e){if(e.target===document.getElementById(‘modal’))closeModDirect();}
+function closeModDirect(){document.getElementById(‘modal’).classList.remove(‘open’);}
+
+function togSave(id,el){var c=C.find(function(x){return x.id===id;});if(isSaved(id)){Object.keys(saved).forEach(function(k){saved[k]=saved[k].filter(function(x){return x!==id;});});el.textContent=‘🤍’;}else{saved[cat(c)].push(id);el.textContent=‘🧡’;}renderML();}
+function togSaveDet(id,btn){var c=C.find(function(x){return x.id===id;});if(isSaved(id)){Object.keys(saved).forEach(function(k){saved[k]=saved[k].filter(function(x){return x!==id;});});btn.textContent=’+ Add to list’;btn.classList.remove(‘added’);}else{saved[cat(c)].push(id);btn.textContent=‘✓ Saved to My List’;btn.classList.add(‘added’);}renderML();}
+
+function renderML(){
+var el=document.getElementById(‘mlscroll’);var html=’’;var any=false;
+[{l:‘Reach’,k:‘reach’},{l:‘Fit’,k:‘fit’},{l:‘Safe’,k:‘safe’}].forEach(function(s){
+if(!saved[s.k].length)return;any=true;
+html+=’<div class="mls-title">’+s.l+’ <span>Edit</span></div><div class="mlrow">’;
+saved[s.k].forEach(function(id){
+var base=C.find(function(c){return c.id===id;}),f=score(base);
+html+=’<div class="mlcard" onclick="openCol(\''+id+'\')">’
++’<div class="mlcard-badge">’+f+’% fit ✨</div>’
++’<div class="mlcard-name">’+base.name+’</div>’
++’<div class="mlcard-hrt">🧡</div>’
++’<div onclick="event.stopPropagation();" id="na-'+id+'">’
++(notes[id]?’<div class="mlcard-note" onclick="openNote(\''+id+'\')">”’+notes[id]+’” ✏️</div>’:’<div class="mlcard-note" onclick="openNote(\''+id+'\')">+ Add note ✏️</div>’)
++’</div></div>’;
+});
+html+=’</div>’;
+});
+if(!any)html=’<div style="padding:40px 18px;text-align:center;color:var(--muted);"><div style="font-size:46px;margin-bottom:10px;">📋</div><div style="font-size:15px;font-weight:600;color:var(--ink);margin-bottom:5px;">Your list is empty</div><div style="font-size:13px;">Heart colleges in Matches to save them here.</div></div>’;
+el.innerHTML=html;
+if(any){var t=document.getElementById(‘toast’);t.style.display=‘block’;setTimeout(function(){t.style.display=‘none’;},3000);}
+}
+function openNote(id){
+var a=document.getElementById(‘na-’+id);
+a.innerHTML=’<textarea class="note-ta" id="nta-'+id+'" rows="3" placeholder="Write your thoughts...">’+(notes[id]||’’)+’</textarea><button class="note-sv" onclick="saveNote(\''+id+'\')">Save</button>’;
+setTimeout(function(){var t=document.getElementById(‘nta-’+id);if(t){t.focus();t.setSelectionRange(t.value.length,t.value.length);}},50);
+}
+function saveNote(id){var t=document.getElementById(‘nta-’+id);notes[id]=t?t.value.trim():’’;var a=document.getElementById(‘na-’+id);if(a)a.innerHTML=notes[id]?’<div class="mlcard-note" onclick="openNote(\''+id+'\')">”’+notes[id]+’” ✏️</div>’:’<div class="mlcard-note" onclick="openNote(\''+id+'\')">+ Add note ✏️</div>’;}
+
+function goTo(id){
+document.querySelectorAll(’.screen’).forEach(function(s){if(s.classList.contains(‘active’))s.classList.add(‘exit’);s.classList.remove(‘active’);});
+setTimeout(function(){document.querySelectorAll(’.screen’).forEach(function(s){s.classList.remove(‘exit’);});document.getElementById(id).classList.add(‘active’);if(id===‘mylist’)renderML();},140);
+}
+function goBack(){goTo(prevScr);}
+</script>
+
+</body>
+</html>
